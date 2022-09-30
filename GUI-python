@@ -1,0 +1,570 @@
+# -*- coding: utf-8 -*-
+
+import tkinter
+from tkinter import *
+
+
+from PIL import ImageTk,Image
+from tkinter import messagebox
+from random import randint
+import random
+from tkinter import filedialog
+from PIL import Image as PIL_image, ImageTk as PIL_imagetk
+
+import sqlite3
+
+
+#%%Variables zum Zählen richtiger Antworte
+nummer = 0 
+counter = 0
+counter2 =0
+counter3 =0
+counter4 =0
+counter5 =0
+counter6 =0 
+#%% Erste Funktion (Ausführung) 
+def prog():
+        #%% global-Variables
+        global nummer
+        global frame1 
+        global zahl 
+        global labek 
+        global feld  
+        global auswahl
+        global auswahl2
+       
+        #%%Set anzahl der Fragen
+        if nummer > 5 : 
+            score()
+        
+        #%% Weiter
+        else:  
+            #%% vorhandene Elemente löschen 
+            label_feld.destroy()
+            case.destroy()
+            
+    
+            #%%Button Next für die nächste Frage und Bild 
+            next_button = Button(fenster, text="Next",width=10,bg="green",fg="white",font=("arial",16,"bold"),command = prog)
+            next_button.place(relx = 0.6, rely= 0.9)
+            
+           
+            #%% Menu erstellen 
+            menubar = Menu(fenster)
+            filemenu = Menu(menubar, tearoff = 0)
+            filemenu2 = Menu(menubar, tearoff = 0)
+            filemenu.add_command(label="Open")
+            filemenu2.add_command(label="Fehlerkatalog", command = Fehlerkatalog)
+            filemenu2.add_command(label="App-Guide")
+            filemenu.add_command(label="Save")
+            filemenu.add_command(label="Exit", command = fenster.destroy)
+            menubar.add_cascade(label="File", menu = filemenu,font=("arial",20,"bold"))
+            menubar.add_cascade(label="help", menu = filemenu2,font=("arial",20,"bold") )
+            fenster.config(menu = menubar)
+            nummer = nummer +1
+                  
+        
+            #%% Programmstart - zufällige Bilder anzeigen 
+            #Rahmen für die Bilderanzeige 
+            frame1 = LabelFrame(fenster, text = 'Bilder', padx = 5, pady = 5, relief =RAISED, bg = "black", fg ="white") 
+            frame1.place(anchor ='nw',relx = 0, rely=0.39)
+            
+        
+               
+            #%% Zufallauswahl der Bilder  von unterschiedlichen Arten 
+            
+            zahl = randint(1,6)  # erzeugen zufällig integer Zahlen von  1 bis 6
+            
+            """
+             Für jede Zahl wird ein Bild in einer bestimmten Liste angezeigt.
+             
+             Bsp: für zahl = 1, wird das zu bewertende Bild aus der Partikel-Liste genommen 
+             
+             ** Die Kategorie-Listen findet man am Ende des Programms
+             
+            """
+            if zahl == 1:
+                
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_partikel[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_partikel[zahl1-1]
+               
+                del zahl1
+                
+            elif zahl == 2:
+                
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_bruch[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_bruch[zahl1-1]
+                del zahl1
+                
+            elif zahl == 3:
+                
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_abschattung[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_abschattung[zahl1-1]
+                del zahl1
+                
+            elif zahl == 4:
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_gute[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_gute[zahl1-1]
+                del zahl1
+                
+            elif zahl == 5:
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_Abdruck[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_Abdruck[zahl1-1]
+                del zahl1
+                     
+            else: 
+                zahl1 = randint(1,6) 
+                labek = Label(frame1, image = Bilder_extra[zahl1-1])
+                labek.pack() 
+                labek.image = Bilder_extra[zahl1-1]
+                del zahl1
+                
+      
+            
+           #%% Fragen und Auswählen erstellen 
+            #Frage über Fehler 
+            feld = LabelFrame(fenster, text = "Frage "+str(nummer)+": liegt einen Defekt vor?:\n",font=("arial",18), height = 800, relief =RAISED,bg ="black",fg = "white" )
+            feld.grid( padx = 1500, pady =600,ipadx = 20, ipady = 20)
+            
+            #%%Antworte 
+            #nein
+            auswahl2 = Button( feld , text = Auswahl_liste1[1],bg ="light blue", font ="arial",cursor ="hand2", command = prog3,width=12)
+            auswahl2.grid(column=0,row =0,padx = 30, pady =30,ipadx = 20, ipady =20)
+           
+            #ja 
+            auswahl = Button( feld, text = Auswahl_liste1[0],bg ="light blue",font ="arial",cursor ="hand2", command = prog2,width=12)
+            auswahl.grid(column=1,row =0,padx = 30, pady =30,ipadx = 20, ipady =20)
+ 
+#%%Zweite Funktion (Nein angeklickt)            
+def prog3():
+    global counter
+    
+    #Falsche Auswahl (red blinken)
+    if Antworte_liste1[zahl-1] != Auswahl_liste1[1]:    
+       auswahl2.config(bg ="red") 
+       messagebox.showinfo("Hinweis", " \n\n Auf next anklicken")
+      
+    #richtige Auswahl
+    else :
+        auswahl2.configure(bg ="green")  
+        messagebox.showinfo("Hinweis", "Auf next anklicken")
+        counter = counter + 1
+    feld.destroy()
+    auswahl.destroy()
+    auswahl2.destroy() 
+#%% Dritte Funktion (Ja angeklickt)
+
+def prog2():
+    
+   #Falsche Auswahl (red blinken)
+    if Antworte_liste1[zahl-1] != Auswahl_liste1[0]:
+        
+        auswahl.configure(bg ="red")
+        messagebox.showinfo("Hinweis", "Falsche Antwort!! \n\n Auf next anklicken")
+        feld.destroy()
+        auswahl.destroy()
+        auswahl2.destroy()
+        
+    #richtige Auswahl (green blinken)    
+    else :
+        auswahl.configure(bg ="green")   
+        messagebox.showinfo("Hinweise", "Nach Fehlerart suchen")  
+        feld.destroy()
+        auswahl.destroy()
+        auswahl2.destroy()
+            
+        #%% Rahmen für Fragenanzeige (Art von Fehler) 
+        global frame2 
+        global feld2
+        global fehler
+        global fehler1
+        global fehler2
+        global fehler3
+        global fehler4
+        global verify
+       
+        
+        # Rahmen
+        frame2 = LabelFrame(fenster,text = 'Welcher Art von Defekt liegt vor ?\n',font=("arial",18), relief =RAISED,fg = "white" ,bg ="black")
+        frame2.grid( padx = 1500, pady =530,ipadx = 20, ipady = 20)
+        
+        
+        #Fehlerarten Tabelle 
+        fehler = Button(frame2,text =Auswahl_liste2 [0],font ="arial",background = "light blue", command = control1,width=50,cursor ="hand2")
+        
+        fehler1 = Button(frame2,text= Auswahl_liste2 [1],font ="arial",background = "light blue", command = control2,width=50,cursor ="hand2")
+       
+        fehler2 =Button(frame2,text = Auswahl_liste2 [2],font ="arial",background = "light blue", command = control3,width=50,cursor ="hand2")
+        
+        fehler3 = Button(frame2,text = Auswahl_liste2 [3],font ="arial",background = "light blue", command = control4,width=50,cursor ="hand2")
+        
+        fehler4 = Button(frame2,text = Auswahl_liste2 [4],font ="arial",background = "light blue", command = control5,width=50,cursor ="hand2")
+        
+        fehler.grid(column=0,row =0,padx = 30, pady =30,ipadx = 20, ipady =20)
+        fehler1.grid(column=0,row =1,padx = 30, pady =30,ipadx = 20, ipady =20)
+        fehler2.grid(column=0,row =2,padx = 30, pady =30,ipadx = 20, ipady =20) 
+        fehler3.grid(column=0,row =3,padx = 30, pady =30,ipadx = 20, ipady =20)
+        fehler4.grid(column=0,row =4,padx = 30, pady =30,ipadx = 20, ipady =20)
+        
+       
+
+#%% Funktionen  für die Kontrolle einzelner Auswahl    
+#%%Abdruck 
+def control1 ():
+    global counter2
+    global sol_button
+    if Antworte_liste2[zahl-1] != Auswahl_liste2[0]:
+        fehler.configure(bg="red")
+        messagebox.showerror("wrong", "Falsche Antwort")
+        #Lösung-Button, Richtige 
+        sol_button = Button(fenster, text="Lösung anzeigen",width=15,bg="orange", fg="white",font=("arial",16," bold"), command=solution)  
+        sol_button.place(relx = 0.9, rely= 0.9)
+    else: 
+       fehler.configure(bg="green")
+       messagebox.showinfo("Hinweis", "Auf next anklicken")
+       counter2 = counter2 + 1
+    feld.destroy()
+    frame2.destroy()
+    
+#%%Abschatttung   
+def control2 ():
+    global counter3
+    global sol_button
+    if Antworte_liste2[zahl-1] != Auswahl_liste2[1]:
+        fehler1.configure(bg="red")
+        messagebox.showerror("wrong", "Falsche Antwort")
+        #Lösung-Button, Richtige 
+        sol_button = Button(fenster, text="Lösung anzeigen",width=15,bg="orange", fg="white",font=("arial",16," bold"), command=solution)  
+        sol_button.place(relx = 0.9, rely= 0.9)
+    else: 
+       fehler1.configure(bg="green")
+       messagebox.showinfo("Hinweis", "Auf next anklicken")
+       counter3 = counter3 + 1
+    feld.destroy()
+    frame2.destroy()
+
+#%% Bruch   
+def control3 ():
+    global counter4
+    global sol_button
+    if Antworte_liste2[zahl-1] != Auswahl_liste2[2]:
+        fehler2.configure(bg="red")
+        messagebox.showerror("wrong", "Falsche Antwort")
+        #Lösung-Button, Richtige 
+        sol_button = Button(fenster, text="Lösung anzeigen",width=15,bg="orange", fg="white",font=("arial",16," bold"), command=solution)  
+        sol_button.place(relx = 0.9, rely= 0.9)
+    else: 
+       fehler2.configure(bg="green")
+       messagebox.showinfo("Hinweis", "Auf next anklicken") 
+       counter4 = counter4 + 1
+    feld.destroy()
+    frame2.destroy()
+   
+#%% Partikel
+def control4 ():
+    global counter5
+    global sol_button
+    if Antworte_liste2[zahl-1] != Auswahl_liste2[3]:
+        fehler3.configure(bg="red")
+        messagebox.showerror("wrong", "Falsche Antwort")
+        #Lösung-Button, Richtige 
+        sol_button = Button(fenster, text="Lösung anzeigen",width=15,bg="orange", fg="white",font=("arial",16," bold"), command=solution)  
+        sol_button.place(relx = 0.9, rely= 0.9)
+    else: 
+       fehler3.configure(bg="green")
+       messagebox.showinfo("Hinweis", "Auf next anklicken")
+       counter5 = counter5 + 1
+    feld.destroy()
+    frame2.destroy()
+
+#%% Grenzfälle    
+def control5 ():
+    global counter6
+    global sol_button
+    if Antworte_liste2[zahl-1] != Auswahl_liste2[4]:
+        fehler4.configure(bg="red")
+        messagebox.showerror("wrong", "Falsche Antwort")
+        #Lösung-Button, Richtige 
+        sol_button = Button(fenster, text="Lösung anzeigen",width=15,bg="orange", fg="white",font=("arial",16," bold"), command=solution)  
+        sol_button.place(relx = 0.9, rely= 0.9)
+    else: 
+       fehler4.configure(bg="green")
+       messagebox.showinfo("Hinweis", "Auf next anklicken")
+       counter6 = counter6 + 1
+    feld.destroy()
+    frame2.destroy()
+
+#%% Lösungen anzeigen 
+def solution():
+    
+    messagebox.showinfo("Lösung","Richtige Lösung ist:"+ Antworte_liste2[zahl-1]+"\n\nErklärung auf Fehlerkatalog")
+    
+    sol_button.destroy()
+
+#%% Dritte Seite (Ergebnisse anzeigen )
+def score ():
+    global Ergebnis
+    messagebox.showinfo("Fertig", "Der Test ist am Ende\n\n Auf `OK ` drücken für das Ergebnis")
+    fenster.destroy()
+    
+    kurz_fenster2 = tkinter.Tk()
+    kurz_fenster2.title("Score ")
+    kurz_fenster2.geometry ('500x300')
+    kurz_fenster2.config()
+    Ergebnis = counter+counter2+counter3+counter4+counter5+counter6
+    score_feld = Label(kurz_fenster2, text= c+"\n\n Du hast\n\n" +str(Ergebnis)+"\n\nrichtige Lösung(en)" ,font =("bahnschrift",14))
+    score_feld.pack()
+
+    # Datenbank insert  
+    verbindung1 = sqlite3.connect("Datenbank_jenoptik.db")
+    zeiger1 = verbindung1.cursor()
+    
+    zeiger1.execute ("INSERT INTO daten VALUES (?,?)",(c,Ergebnis))
+    
+    zeiger1.execute("SELECT* FROM daten")
+    inhalt = zeiger1.fetchall()
+    print(inhalt)
+    verbindung1.commit()
+    verbindung1.close()                    
+
+#%%################ Zweite Seite #################
+"""
+Das ist die Hauptseite des programms. Die ist in zwei Rahmen(Frame) unterteilt 
+
+++ FRAME1: dient zur Anzeige der Bilder 
+++ FRAME2: zur Anzeige der Fragen und Antworten
+
+Nach jeder Frage(wenn man auf Next klickt) werden die Frames gelöscht und erneu mit neuer Frage und Bild erzeugt.
+  
+"""
+
+def Hauptfenster():
+    global fenster
+    global label_feld 
+    global case
+    global Bilder_partikel
+    global Bilder_bruch
+    global Bilder_abschattung
+    global Bilder_gute
+    global Bilder_Abdruck
+    global Bilder_extra
+    global Auswahl_liste1
+    global Auswahl_liste2
+    global Antworte_liste1
+    global Antworte_liste2
+    
+    #%% Hauptfenster erzeugen  
+    fenster = tkinter.Tk()
+    fenster.geometry("1920x1080")
+    fenster.title (" GT-Learning")
+    fenster.minsize(500,300)
+    fenster.config(bg ="black")
+    
+    #%% Jenoptik-Logo hinzufügen
+    photo1 =Image.open("Download.png")
+    img = ImageTk.PhotoImage(photo1)
+    bg1 = Label(fenster, image = img, relief =RAISED)
+    bg1.place(relx = 0.03, rely=0.03)
+    
+    #%% Bild-Seite
+    photo5 =Image.open("JENOPTIK-DIODE-LAB-Berlin-09-2006-001.jpg").resize((1920,500))
+    img5 = ImageTk.PhotoImage(photo5)
+    bg5 = Label(fenster, image = img5, relief =RAISED)
+    bg5.place(relx = 0.2, rely=0)
+    #%% Begrüßungstext und Hinweise 
+    label_feld = Label(fenster, text = "Mit diesem Test sollen Sie die Top-Seite Bilder von JOOS-Laserbarren bewertet,\n\n"
+                       "und der potenzielle Grund des Ausfalls einer bestimmten Fehlerklasse zugeordnet werden."
+                       "\n\n 1 - Klicken Sie auf 'jetzt starten'um den Test durchzuführen.\n\n 2 - Klicken auf 'Training', um zu üben.  "
+                       , font ="bahnschrift",fg="black",background = "white" )
+    label_feld.pack()
+    label_feld.place(relx = 0.4, rely=0.5)
+   
+    #%%vorprogramm
+        
+    """
+    Vor der Programmausführung werden die Bilder hochgeladen und die Antworte schon gegeben.
+
+    """
+
+    #%% Bilder hochladen 
+    Bilder_partikel=[
+        ImageTk.PhotoImage(Image.open("partikel1.tif").resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('partikel2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('partikel3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('partikel4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('partikel5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('partikel6.tif').resize((1200,800)))
+                  ]
+
+    Bilder_bruch=[
+        ImageTk.PhotoImage(Image.open('bruch1.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('bruch2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('bruch3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('bruch4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('bruch5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('bruch6.tif').resize((1200,800)))
+                   ]
+
+    Bilder_abschattung=[
+        ImageTk.PhotoImage(Image.open('absch1.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('absch2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('absch3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('absch4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('absch5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('absch6.tif').resize((1200,800)))
+                   ]
+
+    Bilder_gute=[
+        ImageTk.PhotoImage(Image.open('gute1.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('gute2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('gute3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('gute4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('gute5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('gute6.tif').resize((1200,800)))
+                   ]
+
+
+    Bilder_Abdruck=[
+        ImageTk.PhotoImage(Image.open('Abdruck1.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('Abdruck2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('Abdruck3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('Abdruck4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('Abdruck5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('Abdruck6.tif').resize((1200,800)))
+                   ]
+
+    Bilder_extra=[
+        ImageTk.PhotoImage(Image.open('extra1.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('extra2.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('extra3.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('extra4.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('extra5.tif').resize((1200,800))),
+        ImageTk.PhotoImage(Image.open('extra6.tif').resize((1200,800)))
+                   ]
+
+    #%% mögliche Antworte
+     
+    Auswahl_liste1 = ["ja","nein"]   
+    Auswahl_liste2 = ["Abdruck","Abschattung","Bruch","Partikel", "Grenzfall",""]
+                    
+    #%%Richtige antworte
+
+    Antworte_liste1 = ["ja","ja","ja","nein","ja","ja"]
+    Antworte_liste2 = ["Partikel","Bruch","Abschattung","Abdruck","Grenzfall",""]
+    
+    #%% Start-Button
+    case = Button (fenster, text="Jetzt starten", command = prog, font ="arial" ,background = "gray", width=15, height=3)
+    case.pack(ipadx = 9, ipady =9)
+    case.place (relx = 0.5, rely= 0.7)
+    
+    #%% Schleife 
+    fenster.mainloop()
+
+#%% Menu- Funktionen
+def Fehlerkatalog (): 
+     
+    print (filedialog.askopenfilename(initialdir ="C:/Users/giresse.tamokeu/Documents/fehlerkatalog", title= "xFehlerkatalog.pdf"))
+
+   
+#%% Erste Seite (Registrierung)
+
+"""
+Im ersten Schritt des Programms muss der Benuzter ein Username geben und dann auf Enter drücken, damit die Hauptseite sich öffnet.
+
+ ++ Das Variable Var_name enthält die Eingabe des Benutzers und wird danach an Variable c zugewiesen.   
+ ++ Der Befehl Command dient zur Ausführung einer Funktion wenn man auf einem Button anklickt 
+ ++ Label, Button, Entry sind die sogennante Widgets der Module TKinter 
+ 
+"""
+#%% Fenster zur Anmeldung erzeugen 
+kurz_fenster = tkinter.Tk()
+kurz_fenster.title("Anmeldung ")
+kurz_fenster.geometry ('1930x1090')
+
+#%%Background Bild hinzufügen 
+phot =Image.open("adobestock-greenbutterfly---image-world.jpg")
+image1 = ImageTk.PhotoImage(phot)
+bckg0 = Label(kurz_fenster,image = image1, bg ='#040405')#
+bckg0.pack(fill='both', expand='yes')
+
+#%%Rahmen für die Anmeldung 
+Frame_an = Frame (kurz_fenster, bg ='#040405', width=950,height = 600)
+Frame_an.place(x= 450,y =250)
+
+#%%Willkommen Feld  
+willkomen = Label(Frame_an, text = "Willkommen zur Oberflächeninspektion für Laserbarren", fg ="white", bg ="#040405",font=("yu  gothic ui",16,"bold"))
+willkomen.place(x =0, y=30, width =900, height= 50 )
+
+#%%Linke Seite Bild 
+phot2 =Image.open("17967-15186911.jpg").resize((450,400))
+image2 = ImageTk.PhotoImage(phot2)
+bckg1 = Label(Frame_an, image = image2,bg ='#040405')#
+bckg1.place(x=50, y=100)
+
+#%% Benutzername eingeben
+global var_name 
+labelLand = Label(Frame_an,text = "Name eingeben", fg ="white",bg="#040405", font=("yu  gothic ui",13,"bold"))
+labelLand.place(x = 550,y = 200)
+var_name= StringVar(Frame_an) 
+name = Entry(Frame_an, textvariable = var_name ,width = 30, highlightthickness=0, relief= FLAT,
+             bg ="#040405",fg = '#6b6a69',font=("yu  gothic ui",13,"bold")) #Feld zur Eingabe 
+name.place(x = 580, y =235 , width = 270 )
+name_line=Canvas(Frame_an,width = 300, highlightthickness=0, height= 2.0, bg='#bdb9b1') 
+name_line.place(x = 550, y =259)
+
+#%% Password eingeben 
+global var_pass 
+labelLand1 = Label(Frame_an,text = "Passwort", fg ="white",bg="#040405", font=("yu  gothic ui",13,"bold"))
+labelLand1.place(x = 550,y = 300)
+var_pass = StringVar(Frame_an) 
+Passwort = Entry(Frame_an, textvariable = var_pass ,width = 30, highlightthickness=0, relief= FLAT,
+             bg ="#040405",fg = '#6b6a69',font=("yu  gothic ui",13,"bold"),show='●') #Feld zur Eingabe 
+Passwort.place(x = 580, y =335 , width = 270 )
+pass_line=Canvas(Frame_an,width = 300, highlightthickness=0, height= 2.0, bg='#bdb9b1') 
+pass_line.place(x = 550, y =359)
+
+#%%passwort check
+def pass_check():     
+    Psswort =  var_pass.get()
+    var_pass.set("")
+    
+    if Psswort == "jen-aoi22" :
+       messagebox.showinfo("message", "login Korrekt")
+       kurz_fenster.destroy()
+       ok = Hauptfenster()
+    else : 
+       messagebox.showerror("message", "Passwort Inkorrekt!!")
+#%%Login Button 
+butt_en = Button(Frame_an, text = "Enter", width=8,bg="green",fg="white",font=("arial",16,"bold"), command = pass_check)
+#butt_en.pack()
+butt_en.place(x =550, y= 450 ) #Positionnierung des Widgets 
+#%% Speicherung der eingegebenen Name
+c = var_name.get()   
+var_name.set("")
+
+#%% Datenbank erstellen 
+verbindung = sqlite3.connect("Datenbank_jenoptik.db")
+zeiger = verbindung.cursor()
+
+zeiger.execute ("CREATE TABLE IF NOT EXISTS daten (Namen TEXT , Score INTEGER )" )
+
+verbindung.commit()
+verbindung.close()
+kurz_fenster.mainloop() 
+
+
+
+
+
+  
+
